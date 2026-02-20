@@ -1,0 +1,35 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --surface: #ffffff;
+  --surface-2: #f8f7f5;
+  --surface-3: #f1efec;
+  --text: #1f2933;
+  --muted: #4b5563;
+  --accent: #e23744;
+  --accent-strong: #c81f32;
+  background-color: var(--surface);
+}
+
+body {
+  margin: 0;
+  font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at 20% 20%, rgba(226, 55, 68, 0.08), transparent 25%),
+    radial-gradient(circle at 80% 0%, rgba(200, 31, 50, 0.06), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #f8f7f5 60%, #f1efec 100%);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

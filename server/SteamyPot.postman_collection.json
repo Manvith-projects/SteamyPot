@@ -1,0 +1,296 @@
+{
+  "info": {
+    "name": "SteamyPot API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Smoke collection for auth, orders, driver, payments"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "userToken", "value": "" },
+    { "key": "restaurantToken", "value": "" },
+    { "key": "driverToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "orderId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"user\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('userToken', res.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login Restaurant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('restaurantToken', res.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"restaurant@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login Driver",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('driverToken', res.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"driver@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('adminToken', res.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders (User)",
+      "item": [
+        {
+          "name": "List Restaurants",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/restaurants",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}" }] }
+          }
+        },
+        {
+          "name": "Create Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('orderId', res._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/orders",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": \"{{restaurantId}}\",\n  \"items\": [{ \"foodId\": \"{{foodId}}\", \"name\": \"Burger\", \"price\": 10, \"quantity\": 1 }],\n  \"address\": \"221B Baker Street\",\n  \"paymentMethod\": \"cod\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Order by Id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/orders/{{orderId}}",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Restaurant",
+      "item": [
+        {
+          "name": "Accept Order",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/restaurant/orders/{{orderId}}/accept",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{restaurantToken}}" }] }
+          }
+        },
+        {
+          "name": "Set Preparing",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/restaurant/orders/{{orderId}}/status",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{restaurantToken}}" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"preparing\"\n}" }
+          }
+        },
+        {
+          "name": "Assign Driver",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/restaurant/orders/{{orderId}}/assign-driver",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{restaurantToken}}" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"driverId\": \"{{driverId}}\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Driver",
+      "item": [
+        {
+          "name": "Accept Assignment",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/driver/orders/{{orderId}}/accept",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{driverToken}}" }] }
+          }
+        },
+        {
+          "name": "Update to Out for Delivery",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/driver/orders/{{orderId}}/status",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{driverToken}}" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"out_for_delivery\"\n}" }
+          }
+        },
+        {
+          "name": "Mark Delivered",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/driver/orders/{{orderId}}/status",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{driverToken}}" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"delivered\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Confirm Payment",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments/{{orderId}}/confirm",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "body": { "mode": "raw", "raw": "{}" }
+          }
+        },
+        {
+          "name": "Fail Payment",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments/{{orderId}}/fail",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] },
+            "body": { "mode": "raw", "raw": "{}" }
+          }
+        },
+        {
+          "name": "Payment Status",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payments/{{orderId}}",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Metrics Overview",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/metrics",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] }
+          }
+        },
+        {
+          "name": "Block User",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/admin/users/{{userId}}/block",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}" }] }
+          }
+        }
+      ]
+    }
+  ]
+}
